@@ -19,6 +19,8 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
+
+        <!-- Init code Huggy.chat  //--><script>var $_Huggy = { defaultCountry: '+55', uuid: '61572559-a9a4-4389-b35f-705c9af50cdc' , company: '8815' }; (function(i,s,o,g,r,a,m){ i[r]={context:{id:'e942a1f9734de091b6235b3deeaa4680'}};a=o;o=s.createElement(o); o.async=1;o.src=g;m=s.getElementsByTagName(a)[0];m.parentNode.insertBefore(o,m); })(window,document,'script','https://js.huggy.chat/widget.min.js','pwz');</script><!-- End code Huggy.chat  //-->
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
