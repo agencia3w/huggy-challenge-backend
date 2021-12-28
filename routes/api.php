@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReaderController;
+use App\Http\Controllers\BookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('readers', [ReaderController::class, 'store']);
     Route::put('readers/{id}', [ReaderController::class, 'update']);
     Route::delete('readers/{id}', [ReaderController::class, 'destroy']);
+    Route::get('books', [BookController::class, 'index']);
+    Route::post('books', [BookController::class, 'store']);
+    Route::put('books/{id}', [BookController::class, 'update']);
+    Route::delete('books/{id}', [BookController::class, 'destroy']);
 });
