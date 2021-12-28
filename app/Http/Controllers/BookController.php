@@ -44,8 +44,11 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->only('title', 'genre', 'author', 'year', 'pages', 'language', 'edition', 'publisher', 'isbn');
-        $validator = Validator::make($data, [
+        $publisher = $request->only('publisher_name', 'publisher_code', 'publisher_phone');
+        $data = $request->only('title', 'genre', 'author', 'year', 'pages', 'language', 'edition', 'isbn');
+        $merge = array_merge($publisher, $data);
+
+        $validator = Validator::make($merge, [
             'title' => 'required',
             'genre' => 'required',
             'author' => 'required',
@@ -53,11 +56,13 @@ class BookController extends Controller
             'pages' => 'required|numeric',
             'language' => 'required',
             'edition' => 'required',
-            'publisher' => 'required',
+            'publisher_name' => 'required',
+            'publisher_code' => 'required',
+            'publisher_phone' => 'required',
             'isbn' => 'required',
         ]);
 
-        $data['publisher'] = json_encode($request->publisher);
+        $data['publisher'] = json_encode($publisher);
 
         //Send failed response if request is not valid
         if ($validator->fails()) {
@@ -69,7 +74,7 @@ class BookController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Could not create book.',
+                'message' => 'Could not create book.'.$e,
             ], 500);
         }
 
@@ -120,8 +125,11 @@ class BookController extends Controller
             ], 404);
         }
 
-        $data = $request->only('title', 'genre', 'author', 'year', 'pages', 'language', 'edition', 'publisher', 'isbn');
-        $validator = Validator::make($data, [
+        $publisher = $request->only('publisher_name', 'publisher_code', 'publisher_phone');
+        $data = $request->only('title', 'genre', 'author', 'year', 'pages', 'language', 'edition', 'isbn');
+        $merge = array_merge($publisher, $data);
+
+        $validator = Validator::make($merge, [
             'title' => 'required',
             'genre' => 'required',
             'author' => 'required',
@@ -129,11 +137,13 @@ class BookController extends Controller
             'pages' => 'required|numeric',
             'language' => 'required',
             'edition' => 'required',
-            'publisher' => 'required',
+            'publisher_name' => 'required',
+            'publisher_code' => 'required',
+            'publisher_phone' => 'required',
             'isbn' => 'required',
         ]);
 
-        $data['publisher'] = json_encode($request->publisher);
+        $data['publisher'] = json_encode($publisher);
 
         //Send failed response if request is not valid
         if ($validator->fails()) {
