@@ -74,13 +74,13 @@ class BookController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Could not create book.'.$e,
+                'message' => 'Não foi possível cadastrar o livro.',
             ], 500);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Book created successfully.',
+            'message' => 'Livro cadastrado com sucesso!',
             'data' => $book
         ], Response::HTTP_OK);
     }
