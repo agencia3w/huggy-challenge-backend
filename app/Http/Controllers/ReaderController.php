@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Reader;
 use Illuminate\Http\Request;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
 
