@@ -63,7 +63,7 @@ class ReaderController extends Controller
 
         //Send failed response if request is not valid
         if ($validator->fails()) {
-            return response()->json(['error_readers' => $validator->messages()], 200);
+            return response()->json(['error_readers' => $validator->messages(),'message' => 'error'], 200);
         }
 
         try {

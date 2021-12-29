@@ -66,7 +66,7 @@ class BookController extends Controller
 
         //Send failed response if request is not valid
         if ($validator->fails()) {
-            return response()->json(['error_books' => $validator->messages()], 200);
+            return response()->json(['error_books' => $validator->messages(),'message' => 'error'], 200);
         }
 
         try {
