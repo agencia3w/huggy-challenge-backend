@@ -27,7 +27,7 @@ class ReaderController extends Controller
         $readers = Reader::paginate(10);
 
         return response()->json([
-            'success' => true,
+            'success_readers' => true,
             'message' => 'Successful reader listing',
             'data' => $readers
         ], Response::HTTP_OK);
@@ -70,13 +70,13 @@ class ReaderController extends Controller
             $reader = Reader::firstOrCreate($data);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'success_readers' => false,
                 'message' => 'Could not create reader.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
+            'success_readers' => true,
             'message' => 'Reader created successfully.',
             'data' => $reader
         ], Response::HTTP_OK);
@@ -117,7 +117,7 @@ class ReaderController extends Controller
 
         if (empty($reader)) {
             return response()->json([
-                'success' => false,
+                'success_readers' => false,
                 'message' => 'Reader not found',
             ], 404);
         }
@@ -140,13 +140,13 @@ class ReaderController extends Controller
             $reader->update($data);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'success_readers' => false,
                 'message' => 'Could not update reader.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
+            'success_readers' => true,
             'message' => 'Reader update successfully.',
             'data' => $reader
         ], Response::HTTP_OK);
@@ -164,7 +164,7 @@ class ReaderController extends Controller
 
         if (empty($reader)) {
             return response()->json([
-                'success' => false,
+                'success_readers' => false,
                 'message' => 'Reader not found',
             ], 404);
         }
@@ -173,13 +173,13 @@ class ReaderController extends Controller
             $reader->delete();
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'success_readers' => false,
                 'message' => 'Could not remove reader.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
+            'success_readers' => true,
             'message' => 'Reader removed successfully.',
         ], Response::HTTP_OK);
     }

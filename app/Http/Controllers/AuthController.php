@@ -35,7 +35,7 @@ class AuthController extends Controller
 
         //User created, return success response
         return response()->json([
-            'success' => true,
+            'success_auth' => true,
             'message' => 'User created successfully',
             'data' => $user
         ], Response::HTTP_OK);
@@ -63,21 +63,21 @@ class AuthController extends Controller
             if (!$token = JWTAuth::attempt($credentials)) {
 
                 return response()->json([
-                    'success' => false,
+                    'success_auth' => false,
                     'message' => 'Login credentials are invalid.',
                 ], 400);
             }
         } catch (JWTException $e) {
             return $credentials;
             return response()->json([
-                'success' => false,
+                'success_auth' => false,
                 'message' => 'Could not create token.',
             ], 500);
         }
 
         //Token created, return with success response and jwt token
         return response()->json([
-            'success' => true,
+            'success_auth' => true,
             'token' => $token,
         ]);
     }
@@ -99,12 +99,12 @@ class AuthController extends Controller
             JWTAuth::invalidate($request->token);
 
             return response()->json([
-                'success' => true,
+                'success_auth' => true,
                 'message' => 'User has been logged out'
             ]);
         } catch (JWTException $exception) {
             return response()->json([
-                'success' => false,
+                'success_auth' => false,
                 'message' => 'Sorry, user cannot be logged out'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

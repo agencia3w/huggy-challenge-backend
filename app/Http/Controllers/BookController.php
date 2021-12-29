@@ -20,7 +20,7 @@ class BookController extends Controller
         $books = Book::paginate(10);
 
         return response()->json([
-            'success' => true,
+            'success_books' => true,
             'message' => 'Successful book listing',
             'data' => $books
         ], Response::HTTP_OK);
@@ -73,13 +73,13 @@ class BookController extends Controller
             $book = Book::firstOrCreate($data);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'success_books' => false,
                 'message' => 'Não foi possível cadastrar o livro.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
+            'success_books' => true,
             'message' => 'Livro cadastrado com sucesso!',
             'data' => $book
         ], Response::HTTP_OK);
@@ -120,7 +120,7 @@ class BookController extends Controller
 
         if (empty($book)) {
             return response()->json([
-                'success' => false,
+                'success_books' => false,
                 'message' => 'book not found',
             ], 404);
         }
@@ -154,13 +154,13 @@ class BookController extends Controller
             $book->update($data);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'success_books' => false,
                 'message' => 'Could not update book.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
+            'success_books' => true,
             'message' => 'Book update successfully.',
             'data' => $book
         ], Response::HTTP_OK);
@@ -178,7 +178,7 @@ class BookController extends Controller
 
         if (empty($book)) {
             return response()->json([
-                'success' => false,
+                'success_books' => false,
                 'message' => 'book not found',
             ], 404);
         }
@@ -187,13 +187,13 @@ class BookController extends Controller
             $book->delete();
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'success_books' => false,
                 'message' => 'Could not remove book.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
+            'success_books' => true,
             'message' => 'Book removed successfully.',
         ], Response::HTTP_OK);
     }
