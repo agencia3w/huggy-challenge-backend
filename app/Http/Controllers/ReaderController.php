@@ -7,6 +7,7 @@ use App\Models\Reader;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class ReaderController extends Controller
 {
@@ -75,6 +76,8 @@ class ReaderController extends Controller
             return response()->json(['error_readers' => $validator->messages(), 'message' => 'error'], 200);
         }
 
+        //Insert reader into db
+
         try {
             $reader = Reader::firstOrCreate($data);
         } catch (\Exception $e) {
@@ -82,6 +85,24 @@ class ReaderController extends Controller
                 'success_readers' => false,
                 'message' => 'Could not create reader.',
             ], 500);
+        }
+
+        //CRM integration
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Token' => '85110ace1272867bb83868417a5d88e2'
+            ])->post('https://api.pipe.run/v1/persons', [
+                'name' => $request->name,
+                'contact_emails' => [$request->email],
+                'contact_phones' => [$request->phone],
+                'address' => $request->address,
+                'district' => $request->district,
+                'address_postal_code' => $request->zipCode,
+                'birth_day' => $request->birthday
+            ]);
+        } catch (\Exception $e) {
+            // send email notification
         }
 
         return response()->json([
@@ -201,6 +222,44 @@ class ReaderController extends Controller
         return response()->json([
             'success_readers' => true,
             'message' => 'Reader removed successfully.',
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Store CRM PipeRun
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function sendCRM(Request $request)
+    {
+        dd($request->all());
+
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Token' => '85110ace1272867bb83868417a5d88e2'
+            ])->post('https://api.pipe.run/v1/persons', [
+                'name' => 'Paulo Neto 5',
+                'contact_emails' => ['paulinho@agencia3w.com.br'],
+                'contact_phones' => ['75 991115905'],
+                'address' => 'Rua Ilha Bela, 150',
+                'district' => 'Papagaio',
+                'address_postal_code' => '44059230',
+                'birth_day' => '1983-10-05'
+            ]);
+
+            dd($response['data']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success_readed' => false,
+                'message' => 'Could not add book.' . $e,
+            ], 500);
+        }
+
+        return response()->json([
+            'success_readed' => true,
+            'message' => 'Readed Book successfully.',
         ], Response::HTTP_OK);
     }
 
