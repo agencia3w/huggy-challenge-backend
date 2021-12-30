@@ -26,12 +26,19 @@ class ReaderController extends Controller
     public function index(Request $request)
     {
         $type = $request->get('type');
-        $readers = ($type === 'small') ? Reader::pluck('name', 'id') : Reader::paginate(10);
+        $readers = Reader::paginate(10);
+        $resume = "";
+
+        foreach($readers as $item){
+            $resume .= $item->id . " - " . $item->name ."\n";
+        }
+
+        $data = ($type === 'resume') ? $resume : $readers;
 
         return response()->json([
             'success_readers' => true,
             'message' => 'Successful reader listing',
-            'data' => $readers
+            'data' => $data
         ], Response::HTTP_OK);
     }
 
