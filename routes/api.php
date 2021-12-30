@@ -23,13 +23,10 @@ Route::post('login', [AuthController::class, 'authenticate']);
 
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('logout', [AuthController::class, 'logout']);
-    Route::get('readers', [ReaderController::class, 'index']);
-    Route::post('readers', [ReaderController::class, 'store']);
-    Route::put('readers/{id}', [ReaderController::class, 'update']);
-    Route::delete('readers/{id}', [ReaderController::class, 'destroy']);
-    Route::get('books', [BookController::class, 'index']);
-    Route::post('books', [BookController::class, 'store']);
-    Route::put('books/{id}', [BookController::class, 'update']);
-    Route::delete('books/{id}', [BookController::class, 'destroy']);
+
+    Route::resource('readers', ReaderController::class);
+    Route::resource('books', BookController::class);
+
     Route::post('readedBook', [ReaderController::class, 'readedBook']);
+    Route::get('readedTotal', [ReaderController::class, 'readedTotal']);
 });
