@@ -29,15 +29,15 @@ class ReaderController extends Controller
         $readers = Reader::orderBy('name')->paginate(10);
         $resume = "";
 
-        foreach($readers as $item){
-            $resume .= $item->id . " - " . $item->name ."\n";
+        foreach ($readers as $item) {
+            $resume .= $item->id . " - " . $item->name . "\n";
         }
 
         $data = ($type === 'resume') ? $resume : $readers;
 
         return response()->json([
             'success_readers' => true,
-            'message' => 'Successful reader listing',
+            'message' => 'Successfull reader listing',
             'data' => $data
         ], Response::HTTP_OK);
     }
@@ -72,7 +72,7 @@ class ReaderController extends Controller
 
         //Send failed response if request is not valid
         if ($validator->fails()) {
-            return response()->json(['error_readers' => $validator->messages(),'message' => 'error'], 200);
+            return response()->json(['error_readers' => $validator->messages(), 'message' => 'error'], 200);
         }
 
         try {
@@ -99,7 +99,18 @@ class ReaderController extends Controller
      */
     public function show(Reader $reader)
     {
-        //
+        if (empty($reader)) {
+            return response()->json([
+                'success_readers' => false,
+                'message' => 'Reader not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success_readers' => true,
+            'message' => 'Successfull reader listing',
+            'data' => $reader
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -217,7 +228,7 @@ class ReaderController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success_readed' => false,
-                'message' => 'Could not add book.'.$e,
+                'message' => 'Could not add book.' . $e,
             ], 500);
         }
 
@@ -227,4 +238,26 @@ class ReaderController extends Controller
         ], Response::HTTP_OK);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function readedTotal()
+    {
+        $readers = Reader::withCount('books')->orderBy('name')->get();
+
+        // dd($readers);
+        $data = "";
+
+        foreach ($readers as $item) {
+            $data .= $item->name . " - " . $item->books_count . "\n";
+        }
+
+        return response()->json([
+            'success_readers' => true,
+            'message' => 'Successful reader listing',
+            'data' => $data
+        ], Response::HTTP_OK);
+    }
 }
