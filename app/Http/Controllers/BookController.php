@@ -15,14 +15,22 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::paginate(10);
+        $type = $request->get('type');
+        $books = Book::orderBy('title')->paginate(10);
+        $resume = "";
+
+        foreach($books as $item){
+            $resume .= $item->id . " - " . $item->title ."\n";
+        }
+
+        $data = ($type === 'resume') ? $resume : $books;
 
         return response()->json([
             'success_books' => true,
             'message' => 'Successful book listing',
-            'data' => $books
+            'data' => $data
         ], Response::HTTP_OK);
     }
 
