@@ -38,7 +38,7 @@ class ReaderController extends Controller
         return response()->json([
             'success_readers' => true,
             'message' => 'Successful reader listing',
-            'data' => $data
+            'readers' => $data
         ], Response::HTTP_OK);
     }
 
