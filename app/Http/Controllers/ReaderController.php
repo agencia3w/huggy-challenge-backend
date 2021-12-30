@@ -206,8 +206,8 @@ class ReaderController extends Controller
 
         if (empty($reader) || empty($book)) {
             return response()->json([
-                'success_readed' => false,
                 'error' => true,
+                'success_readed' => false,
                 'message' => 'error',
             ], 404);
         }
