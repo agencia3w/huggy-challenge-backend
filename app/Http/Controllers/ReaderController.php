@@ -26,7 +26,7 @@ class ReaderController extends Controller
     public function index(Request $request)
     {
         $type = $request->get('type');
-        $readers = Reader::paginate(10);
+        $readers = Reader::orderBy('name')->paginate(10);
         $resume = "";
 
         foreach($readers as $item){
