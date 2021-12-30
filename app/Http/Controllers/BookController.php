@@ -30,7 +30,7 @@ class BookController extends Controller
         return response()->json([
             'success_books' => true,
             'message' => 'Successful book listing',
-            'books' => $data
+            'data' => $data
         ], Response::HTTP_OK);
     }
 
