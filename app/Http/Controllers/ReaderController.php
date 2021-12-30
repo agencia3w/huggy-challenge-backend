@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Reader;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,9 +23,10 @@ class ReaderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $readers = Reader::paginate(10);
+        $type = $request->get('type');
+        $readers = ($type === 'small') ? Reader::pluck('name', 'id') : Reader::paginate(10);
 
         return response()->json([
             'success_readers' => true,
@@ -183,4 +185,38 @@ class ReaderController extends Controller
             'message' => 'Reader removed successfully.',
         ], Response::HTTP_OK);
     }
+
+    /**
+     * Store readed book
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function readedBook(Request $request)
+    {
+        $reader = Reader::find($request->reader_id);
+        $book = Book::find($request->book_id);
+
+        if (empty($reader) || empty($book)) {
+            return response()->json([
+                'success_readers' => false,
+                'message' => 'error',
+            ], 404);
+        }
+
+        try {
+            $reader->books()->attach($request->book_id);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success_readed' => false,
+                'message' => 'Could not add book.'.$e,
+            ], 500);
+        }
+
+        return response()->json([
+            'success_readers' => true,
+            'message' => 'Readed Book successfully.',
+        ], Response::HTTP_OK);
+    }
+
 }

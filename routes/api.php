@@ -31,4 +31,5 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('books', [BookController::class, 'store']);
     Route::put('books/{id}', [BookController::class, 'update']);
     Route::delete('books/{id}', [BookController::class, 'destroy']);
+    Route::post('readedBook', [ReaderController::class, 'readedBook']);
 });

@@ -10,4 +10,8 @@ class Reader extends Model
     use HasFactory;
 
     public $fillable = ['name', 'email', 'phone', 'address', 'district', 'state', 'city', 'zipCode', 'birthday'];
+
+    public function books(){
+        return $this->belongsToMany(Book::class, 'book_reader');
+    }
 }

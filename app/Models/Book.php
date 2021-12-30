@@ -9,9 +9,9 @@ class Book extends Model
 {
     use HasFactory;
 
-    // protected $cast = [
-    //     'publisher' => 'json'
-    // ];
-
     public $fillable = ['title','genre','author','year','pages','language','edition','publisher','isbn'];
+
+    public function readers(){
+        return $this->belongsToMany(Reader::class, 'book_reader');
+    }
 }
