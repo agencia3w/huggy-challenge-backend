@@ -8,104 +8,83 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\AuthRequest;
+use App\Http\Requests\LogoutRequest;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    /**
+     * User Register.
+     *
+     * @param  \App\Http\Requests\RegisterRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(RegisterRequest $request)
     {
-        //Validate data
-        $data = $request->only('name', 'email', 'password');
-        $validator = Validator::make($data, [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|max:50'
-        ]);
-
-        //Send failed response if request is not valid
-        if ($validator->fails()) {
-            return response()->json(['error_auth' => $validator->messages()], 200);
-        }
-
-        //Request is valid, create new user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password)
         ]);
 
-        //User created, return success response
         return response()->json([
-            'success_auth' => true,
-            'message' => 'User created successfully',
+            'success' => true,
+            'message' => 'Usuário cadastrado com sucesso',
             'data' => $user
-        ], Response::HTTP_OK);
+        ], Response::HTTP_CREATED);
     }
 
-    public function authenticate(Request $request)
+    /**
+     * User Login.
+     *
+     * @param  \App\Http\Requests\AuthRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function authenticate(AuthRequest $request)
     {
         $credentials = $request->only('email', 'password');
 
-        //valid credential
-        $validator = Validator::make($credentials, [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6|max:50'
-        ]);
-
-        //Send failed response if request is not valid
-        if ($validator->fails()) {
-            return response()->json(['error_auth' => $validator->messages()], 200);
-        }
-
-
-        //Request is validated
-        //Crean token
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-
                 return response()->json([
-                    'success_auth' => false,
-                    'message' => 'Login credentials are invalid.',
-                ], 400);
+                    'success' => false,
+                    'message' => 'Credenciais incorretas',
+                ], Response::HTTP_UNAUTHORIZED);
             }
         } catch (JWTException $e) {
             return $credentials;
             return response()->json([
-                'success_auth' => false,
-                'message' => 'Could not create token.',
-            ], 500);
+                'success' => false,
+                'message' => 'Não foi possível gerar o token',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        //Token created, return with success response and jwt token
         return response()->json([
-            'success_auth' => true,
+            'success' => true,
             'token' => $token,
-        ]);
+        ], Response::HTTP_OK);
     }
 
-    public function logout(Request $request)
+    /**
+     * User Logout.
+     *
+     * @param  \App\Http\Requests\LogoutRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(LogoutRequest $request)
     {
-        //valid credential
-        $validator = Validator::make($request->only('token'), [
-            'token' => 'required'
-        ]);
-
-        //Send failed response if request is not valid
-        if ($validator->fails()) {
-            return response()->json(['error_auth' => $validator->messages()], 200);
-        }
-
-        //Request is validated, do logout
         try {
             JWTAuth::invalidate($request->token);
 
             return response()->json([
-                'success_auth' => true,
-                'message' => 'User has been logged out'
+                'success' => true,
+                'message' => 'Usuário fez logout com sucesso'
             ]);
         } catch (JWTException $exception) {
             return response()->json([
-                'success_auth' => false,
-                'message' => 'Sorry, user cannot be logged out'
+                'success' => false,
+                'message' => 'Nâo foi possível efetuar logout'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
