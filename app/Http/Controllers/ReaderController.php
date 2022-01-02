@@ -23,6 +23,7 @@ class ReaderController extends Controller
     {
         $type = $request->get('type');
         $readers = Reader::orderBy('name')->paginate(10);
+
         $resume = $readers->map(function ($reader) {
             return "$reader->id - $reader->name";
         })->implode(PHP_EOL);
@@ -70,6 +71,9 @@ class ReaderController extends Controller
                 'address_postal_code' => $request->zipCode,
                 'birth_day' => $request->birthday
             ]);
+
+            $reader['crm_reader_id'] = $response['data']['id'];
+            $reader->save();
         } catch (\Exception $e) {
             $data = [
                 'message' => 'Não foi possível cadastrar o leitor no CRM',
@@ -121,6 +125,29 @@ class ReaderController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
+        //CRM integration
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Token' => '85110ace1272867bb83868417a5d88e2'
+            ])->put("https://api.pipe.run/v1/persons/$reader->crm_reader_id", [
+                'name' => $request->name,
+                'contact_emails' => [$request->email],
+                'contact_phones' => [$request->phone],
+                'address' => $request->address,
+                'district' => $request->district,
+                'address_postal_code' => $request->zipCode,
+                'birth_day' => $request->birthday
+            ]);
+        } catch (\Exception $e) {
+            $data = [
+                'message' => 'Não foi possível atualizar o leitor no CRM',
+                'subject' => 'Erro integração CRM',
+                'type' => 'error'
+            ];
+            $this->sendMail($data);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Leitor atualizado com sucesso',
@@ -143,6 +170,21 @@ class ReaderController extends Controller
                 'success' => false,
                 'message' => 'Não foi possível excluir o leitor',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        //CRM integration
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Token' => '85110ace1272867bb83868417a5d88e2'
+            ])->delete("https://api.pipe.run/v1/persons/$reader->crm_reader_id");
+        } catch (\Exception $e) {
+            $data = [
+                'message' => 'Não foi possível excluir o leitor do CRM',
+                'subject' => 'Erro integração CRM',
+                'type' => 'error'
+            ];
+            $this->sendMail($data);
         }
 
         return response()->noContent();
