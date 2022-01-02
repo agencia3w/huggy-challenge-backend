@@ -19,7 +19,7 @@ class BookController extends Controller
     {
         $type = $request->get('type');
         $books = Book::orderBy('title')->paginate(10);
-        $resume = $books->map(function($book){
+        $resume = $books->map(function ($book) {
             return "$book->id - $book->title";
         })->implode(PHP_EOL);
 

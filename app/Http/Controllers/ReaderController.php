@@ -23,7 +23,7 @@ class ReaderController extends Controller
     {
         $type = $request->get('type');
         $readers = Reader::orderBy('name')->paginate(10);
-        $resume = $readers->map(function($reader){
+        $resume = $readers->map(function ($reader) {
             return "$reader->id - $reader->name";
         })->implode(PHP_EOL);
 
