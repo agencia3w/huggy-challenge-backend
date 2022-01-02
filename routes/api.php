@@ -27,6 +27,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('readers', ReaderController::class);
     Route::resource('books', BookController::class);
 
-    Route::post('readedBook', [ReaderController::class, 'readedBook']);
+    Route::post('readers/{reader}/books/{book}', [ReaderController::class, 'readedBook']);
     Route::get('readedTotal', [ReaderController::class, 'readedTotal']);
 });
