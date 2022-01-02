@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\ReaderRequest;
+use Illuminate\Support\Carbon;
 
 class ReaderController extends Controller
 {
@@ -47,13 +48,14 @@ class ReaderController extends Controller
     public function store(ReaderRequest $request)
     {
         $data = $request->only('name', 'email', 'phone', 'address', 'district', 'state', 'city', 'zipCode', 'birthday');
+        $data['birthday'] = $birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
 
         try {
             $reader = Reader::firstOrCreate($data);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Não foi possível cadastrar o leitor',
+                'message' => 'Não foi possível cadastrar o leitor'.$e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -69,7 +71,7 @@ class ReaderController extends Controller
                 'address' => $request->address,
                 'district' => $request->district,
                 'address_postal_code' => $request->zipCode,
-                'birth_day' => $request->birthday
+                'birth_day' => $birthday
             ]);
 
             $reader['crm_reader_id'] = $response['data']['id'];
@@ -115,6 +117,7 @@ class ReaderController extends Controller
     public function update(ReaderRequest $request, Reader $reader)
     {
         $data = $request->only('name', 'email', 'phone', 'address', 'district', 'state', 'city', 'zipCode', 'birthday');
+        $data['birthday'] = $birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
 
         try {
             $reader->update($data);
@@ -137,7 +140,7 @@ class ReaderController extends Controller
                 'address' => $request->address,
                 'district' => $request->district,
                 'address_postal_code' => $request->zipCode,
-                'birth_day' => $request->birthday
+                'birth_day' => $birthday
             ]);
         } catch (\Exception $e) {
             $data = [

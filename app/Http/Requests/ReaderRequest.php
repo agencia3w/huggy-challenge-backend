@@ -28,7 +28,7 @@ class ReaderRequest extends FormRequest
             'email' => 'required|email',
             'phone' => 'required',
             'address' => 'required',
-            'birthday' => 'required|date_format:Y-m-d',
+            'birthday' => 'required|date_format:d/m/Y',
             'zipCode' => 'required|numeric',
         ];
     }
