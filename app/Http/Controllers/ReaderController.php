@@ -233,15 +233,11 @@ class ReaderController extends Controller
      */
     public function readedTotal()
     {
-        $data = Cache::remember('readedTotal', 60 * 60, function () {
-            return Reader::withCount('books')
-                ->orderBy('name')
-                ->get()
-                ->map(function (Reader $item) {
-                    return "$item->name - $item->books_count";
-                })
-                ->implode(PHP_EOL);
-        });
+        $data = Reader::allFromCache()
+            ->map(function (Reader $item) {
+                return "$item->name - $item->books_count";
+            })
+            ->implode(PHP_EOL);
 
         return response()->json([
             'success' => true,
@@ -250,6 +246,33 @@ class ReaderController extends Controller
         ], Response::HTTP_OK);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function birthdays()
+    {
+        // dd($this->readedTotal()->getData()->data);
+        $readers = Reader::withCount('books')
+            ->whereDay('birthday', date('d'))
+            ->whereMonth('birthday', date('m'))
+            ->get()
+            ->map(function (Reader $reader) {
+                return [
+                    'reader' => $reader->name,
+                    'email' => $reader->email,
+                    'books' => $reader->books_count,
+                    'pages' => $reader->books->sum('pages')
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Listagem de aniversariantes do dia',
+            'data' => $readers
+        ], Response::HTTP_OK);
+    }
 
     /**
      * Send Email Notification
