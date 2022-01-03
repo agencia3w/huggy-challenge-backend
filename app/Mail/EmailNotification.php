@@ -32,7 +32,7 @@ class EmailNotification extends Mailable
         $message = $this->data['message'];
         $type = $this->data['type'];
 
-        return $this->view('email')
+        return $this->view('mails.notification')
             // ->from($address)
             ->subject($subject)
             ->with([
