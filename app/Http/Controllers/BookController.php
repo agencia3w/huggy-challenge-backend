@@ -6,6 +6,7 @@ use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Http\Requests\BookRequest;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Cache;
 
 class BookController extends Controller
 {
@@ -17,12 +18,17 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $type = $request->get('type');
-        $books = Book::orderBy('title')->paginate(10);
-        $resume = $books->map(function ($book) {
-            return "$book->id - $book->title";
-        })->implode(PHP_EOL);
+        $books = Cache::remember('books', 60 * 60, function () {
+            return Book::orderBy('title')->paginate(10);
+        });
 
+        $resume = Cache::remember('books_resume', 60 * 60, function () use ($books) {
+            return $books->map(function ($book) {
+                return "$book->id - $book->title";
+            })->implode(PHP_EOL);
+        });
+
+        $type = $request->get('type');
         $data = ($type === 'resume') ? $resume : $books;
 
         return response()->json([
@@ -47,6 +53,7 @@ class BookController extends Controller
 
         try {
             $book = Book::firstOrCreate($data);
+            $this->clearCache();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -92,6 +99,7 @@ class BookController extends Controller
 
         try {
             $book->update($data);
+            $this->clearCache();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -116,6 +124,7 @@ class BookController extends Controller
     {
         try {
             $book->delete();
+            $this->clearCache();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -124,5 +133,15 @@ class BookController extends Controller
         }
 
         return response()->noContent();
+    }
+
+    /**
+     * Clear Book Cache
+     *
+     */
+    private function clearCache()
+    {
+        Cache::forget('books');
+        Cache::forget('books_resume');
     }
 }

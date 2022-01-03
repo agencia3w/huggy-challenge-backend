@@ -22,13 +22,18 @@ class ReaderController extends Controller
      */
     public function index(Request $request)
     {
+        $readers = Cache::remember('readers', 60 * 60, function () {
+            return Reader::orderBy('name')->paginate(10);
+        });
+
+        $resume = Cache::remember('readers_resume', 60 * 60, function () use ($readers) {
+            return $readers->map(function ($reader) {
+                return "$reader->id - $reader->name";
+            })->implode(PHP_EOL);
+        });
+
+
         $type = $request->get('type');
-        $readers = Reader::orderBy('name')->paginate(10);
-
-        $resume = $readers->map(function ($reader) {
-            return "$reader->id - $reader->name";
-        })->implode(PHP_EOL);
-
         $data = ($type === 'resume') ? $resume : $readers;
 
         return response()->json([
@@ -52,10 +57,11 @@ class ReaderController extends Controller
 
         try {
             $reader = Reader::firstOrCreate($data);
+            $this->clearCache();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Não foi possível cadastrar o leitor'.$e,
+                'message' => 'Não foi possível cadastrar o leitor' . $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -121,6 +127,7 @@ class ReaderController extends Controller
 
         try {
             $reader->update($data);
+            $this->clearCache();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -168,6 +175,7 @@ class ReaderController extends Controller
     {
         try {
             $reader->delete();
+            $this->clearCache();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -242,6 +250,7 @@ class ReaderController extends Controller
         ], Response::HTTP_OK);
     }
 
+
     /**
      * Send Email Notification
      *
@@ -250,5 +259,15 @@ class ReaderController extends Controller
     public function sendMail($data)
     {
         \Mail::to('paulinho@agencia3w.com.br')->send(new EmailNotification($data));
+    }
+
+    /**
+     * Clear Book Cache
+     *
+     */
+    private function clearCache()
+    {
+        Cache::forget('readers');
+        Cache::forget('readers_resume');
     }
 }
