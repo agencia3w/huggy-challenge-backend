@@ -53,3 +53,9 @@ Utilize o [Insomnia](https://insomnia.rest/download) ou [Postman](https://www.po
 | Content-Type     	| application/json 	|
 | Accept 	        | application/json  |
 | Authorization    	| Token {JWT}      	|
+
+
+----------
+
+## Integração Huggy
+[Acesse o Chat para testar a API](https://huggy.agencia3w.com.br/)
